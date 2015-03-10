@@ -490,15 +490,19 @@ angular.module('ngTasty.component.table', [
         });
       }
 
-      scope.setColumns = function () {
-        var width, i, active, sortable, sort, 
-            isSorted, isSortedCaret;
+   scope.setColumns = function() {
+
+        var sortBy = "";
+        if (scope.header.sortBy) {
+          var sortBy = $filter('cleanFieldName')(scope.header.sortBy);
+        }
+
+        var width, i, active, sortable, sort,
+          isSorted, isSortedCaret;
         scope.columns = [];
-        scope.header.columns.forEach(function (column, index) {
+        scope.header.columns.forEach(function(column, index) {
+
           column.style = column.style || {};
-          if (!angular.isArray(column.class)) {
-            column.class = [];
-          }
           sortable = true;
           active = false;
           isSorted = '';
@@ -512,19 +516,22 @@ angular.module('ngTasty.component.table', [
               sortable = false;
             }
           }
-          if (column.key === scope.header.sortBy ||
-              '-' + column.key === scope.header.sortBy) {
+          if (column.key === sortBy ||
+            '-' + column.key === sortBy) {
+
             active = true;
           }
           sort = $filter('cleanFieldName')(column.key);
-          if (scope.header.sortBy === '-' + sort) {
+
+          if (sortBy === '-' + sort) {
+
             if (tableConfig.bootstrapIcon) {
               isSorted = '';
               isSortedCaret = 'caret';
             } else {
               isSorted = scope.iconDown;
             }
-          } else if (scope.header.sortBy === sort) {
+          } else if (sortBy === sort) {
             if (tableConfig.bootstrapIcon) {
               isSorted = 'dropup';
               isSortedCaret = 'caret';
@@ -537,29 +544,33 @@ angular.module('ngTasty.component.table', [
             'name': column.name,
             'active': active,
             'sortable': sortable,
-            'class': column.class,
             'style': column.style,
             'isSorted': isSorted,
             'isSortedCaret': isSortedCaret
           });
         });
-        if (scope.header.sortOrder === 'dsc' && 
-            scope.header.sortBy &&
-            scope.header.sortBy[0] !== '-') {
-          scope.header.sortBy = '-' + scope.header.sortBy;
+
+        if (scope.header.sortOrder === 'dsc' &&
+          sortBy &&
+          sortBy[0] !== '-') {
+          scope.header.sortBy = '-' + sortBy;
         }
+
         if (!tastyTable.start) {
           // Thead it's called
           tastyTable.initTable('thead');
         }
       };
-
-      scope.sortBy = function (column) {
+    scope.sortBy = function(column) {
         if (!column.sortable) {
           return false;
         }
         var columnName, sortOrder;
         columnName = $filter('cleanFieldName')(column.key);
+        if(scope.header.sortBy){
+          scope.header.sortBy = $filter('cleanFieldName')(scope.header.sortBy);
+        }
+        console.log(scope.header.sortBy,columnName);
         if (scope.header.sortBy === columnName) {
           sortOrder = 'dsc';
         } else {
