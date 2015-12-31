@@ -503,6 +503,7 @@ angular.module('ngTasty.component.table', [
         scope.header.columns.forEach(function(column, index) {
 
           column.style = column.style || {};
+          console.log(column.style);
           sortable = true;
           active = false;
           isSorted = '';
@@ -741,7 +742,15 @@ angular.module('ngTasty.component.table', [
           }
         }
 
-        scope.rangePage = $filter('range')([], scope.pagMinRange, scope.pagMaxRange);
+        var range = function(start, end) {
+            var result = [];
+            for (var i = start; i < end; i++) {
+                result.push(i);
+            }
+            return result;
+        };
+
+        scope.rangePage = range(scope.pagMinRange, scope.pagMaxRange);//$filter('rangeFilter')([], scope.pagMinRange, scope.pagMaxRange);
 
         if (!tastyTable.start) {
           // Pagination it's called
