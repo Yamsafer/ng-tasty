@@ -589,9 +589,9 @@ angular.module('ngTasty.component.table', [
         if (column.active) {
           listClassToShow.push('active');
         }
-        column.class.forEach(function getListClass (className) {
-          listClassToShow.push(className);
-        });
+        // column.class.forEach(function getListClass (className) {
+        //   listClassToShow.push(className);
+        // });
         return listClassToShow;
       };
 
