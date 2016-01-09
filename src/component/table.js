@@ -315,6 +315,7 @@ angular.module('ngTasty.component.table', [
       if ($scope.query[key]) {
         key = $scope.query[key];
       }
+
       return encodeURIComponent(key) + '=' + encodeURIComponent(value);
     }).join('&');
   };
@@ -366,7 +367,7 @@ angular.module('ngTasty.component.table', [
   }
   $scope.$watchCollection('params', function watchParams (newValue, oldValue){
     if (newValue !== oldValue) {
-      // Run update resuorce only if we are on 
+      // Run update resuorce only if we are on
       // the second cycle or more of `params`
       if (paramsInitialCycle === false) {
         if ($scope.clientSide) {
@@ -503,7 +504,6 @@ angular.module('ngTasty.component.table', [
         scope.header.columns.forEach(function(column, index) {
 
           column.style = column.style || {};
-          console.log(column.style);
           sortable = true;
           active = false;
           isSorted = '';
@@ -571,7 +571,7 @@ angular.module('ngTasty.component.table', [
         if(scope.header.sortBy){
           scope.header.sortBy = $filter('cleanFieldName')(scope.header.sortBy);
         }
-        console.log(scope.header.sortBy,columnName);
+
         if (scope.header.sortBy === columnName) {
           sortOrder = 'dsc';
         } else {
@@ -711,15 +711,17 @@ angular.module('ngTasty.component.table', [
       };
 
       setRemainingRange = function () {
-        if (scope.pagHideMaxRange === true || scope.pagMaxRange > scope.pagination.pages) {
+        if (scope.pagHideMaxRange === true ||
+            scope.pagMaxRange > scope.pagination.pages) {
           return false;
         }
         scope.pagMinRange = scope.pagMaxRange;
-        scope.pagMaxRange = scope.pagMinRange + scope.itemsPerPage;
-        if (scope.pagMaxRange > scope.pagination.pages) {
-          scope.pagMaxRange = scope.pagination.pages;
+        scope.pagMaxRange = scope.pagMinRange + 5;
+        if (scope.pagMaxRange >= scope.pagination.pages) {
+          scope.pagMaxRange = scope.pagination.pages + 1;
+          scope.pagMinRange = scope.pagMaxRange - 5 + 1;
         }
-        scope.pagMinRange = scope.pagMaxRange - scope.itemsPerPage;
+        scope.pagMinRange = scope.pagMaxRange - 5;
         setPaginationRanges();
       };
 
@@ -742,7 +744,7 @@ angular.module('ngTasty.component.table', [
           }
         }
 
-        var range = function(start, end) {
+        var x = function(start, end) {
             var result = [];
             for (var i = start; i < end; i++) {
                 result.push(i);
@@ -750,7 +752,7 @@ angular.module('ngTasty.component.table', [
             return result;
         };
 
-        scope.rangePage = range(scope.pagMinRange, scope.pagMaxRange);//$filter('rangeFilter')([], scope.pagMinRange, scope.pagMaxRange);
+        scope.rangePage = x(scope.pagMinRange, scope.pagMaxRange);//$filter('rangeFilter')([], scope.pagMinRange, scope.pagMaxRange);
 
         if (!tastyTable.start) {
           // Pagination it's called
