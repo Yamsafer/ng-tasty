@@ -5,7 +5,6 @@
 fabfile.py
 
 # Build
-dist
 releases
 !benchmarks/dist
 
