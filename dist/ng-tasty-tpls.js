@@ -501,17 +501,15 @@ angular.module('ngTasty.component.table', [
       }
 
    scope.setColumns = function() {
-
         var sortBy = "";
         if (scope.header.sortBy) {
           var sortBy = $filter('cleanFieldName')(scope.header.sortBy);
         }
-
+        
         var width, i, active, sortable, sort,
           isSorted, isSortedCaret;
         scope.columns = [];
         scope.header.columns.forEach(function(column, index) {
-
           column.style = column.style || {};
           sortable = true;
           active = false;
@@ -533,7 +531,13 @@ angular.module('ngTasty.component.table', [
           }
           sort = $filter('cleanFieldName')(column.key);
 
-          if (sortBy === '-' + sort) {
+          var sortfield = "";
+          if(column.sortby !== undefined){
+            sortfield = $filter('cleanFieldName')(column.sortby);
+          }
+
+          //var field = $filter('cleanFieldName')(column.sortby);
+          if (sortBy === '-' + sortfield) {
 
             if (tableConfig.bootstrapIcon) {
               isSorted = '';
@@ -541,7 +545,7 @@ angular.module('ngTasty.component.table', [
             } else {
               isSorted = scope.iconDown;
             }
-          } else if (sortBy === sort) {
+          } else if (sortBy === sortfield) {
             if (tableConfig.bootstrapIcon) {
               isSorted = 'dropup';
               isSortedCaret = 'caret';
@@ -555,6 +559,7 @@ angular.module('ngTasty.component.table', [
             'active': active,
             'sortable': sortable,
             'style': column.style,
+            'sortby': column.sortby,
             'isSorted': isSorted,
             'isSortedCaret': isSortedCaret
           });
@@ -576,17 +581,16 @@ angular.module('ngTasty.component.table', [
           return false;
         }
         var columnName, sortOrder;
-        columnName = $filter('cleanFieldName')(column.key);
+        columnName = $filter('cleanFieldName')(column.sortby);
         if(scope.header.sortBy){
           scope.header.sortBy = $filter('cleanFieldName')(scope.header.sortBy);
         }
-
         if (scope.header.sortBy === columnName) {
           sortOrder = 'dsc';
         } else {
           sortOrder = 'asc';
         }
-        tastyTable.setParams('sortBy', column.key);
+        tastyTable.setParams('sortBy', column.sortby);
         tastyTable.setParams('sortOrder', sortOrder);
       };
 
@@ -828,9 +832,9 @@ angular.module('ngTasty.filter.camelize', [])
     
     return input.trim() //remove trailing spaces
       .replace(/ +(?= )/g,'') //remove multiple WS
-    	.replace(CAMELIZE_REGEX, function (_, character, pos) { //actual conversion
-    		return character && (first || pos > 0) ? character.toUpperCase () : character;
-    	});
+      .replace(CAMELIZE_REGEX, function (_, character, pos) { //actual conversion
+        return character && (first || pos > 0) ? character.toUpperCase () : character;
+      });
   };
 });
 
