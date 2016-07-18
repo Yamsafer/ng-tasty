@@ -52,7 +52,7 @@ angular.module('ngTasty.component.table', [
   'use strict';
   var listScopeToWatch, initTable, newScopeName, initStatus,
       updateClientSideResource, updateServerSideResource, setDirectivesValues,
-      buildClientResource, buildUrl, paramsInitialCycle, initNow;
+      buildClientResource, buildUrl, paramsInitialCycle, initNow, filterChangedPage;
   this.$scope = $scope;
   initStatus = {};
   initNow = true;
