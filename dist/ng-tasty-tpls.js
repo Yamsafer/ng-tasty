@@ -29,7 +29,8 @@ angular.module('ngTasty.component.table', [
     'count': 5,
     'page': 1,
     'sortBy': undefined,
-    'sortOrder': undefined
+    'sortOrder': undefined,
+    'filterBase': 1
   },
   query: {
     'page': 'page',
@@ -99,6 +100,11 @@ angular.module('ngTasty.component.table', [
   $scope.init.page = $scope.init.page || tableConfig.init.page;
   $scope.init.sortBy = $scope.init.sortBy || tableConfig.init.sortBy;
   $scope.init.sortOrder = $scope.init.sortOrder || tableConfig.init.sortOrder;
+  if (!angular.isUndefined($scope.init.filterBase)) {
+    $scope.init.filterBase = $scope.init.filterBase;
+  } else {
+    $scope.init.filterBase = vm.config.init.filterBase;
+  }
   $scope.watchResource = $scope.watchResource || tableConfig.watchResource;
 
   // Defualt variables
@@ -346,19 +352,41 @@ angular.module('ngTasty.component.table', [
   };
 
   updateServerSideResource = function (updateFrom) {
+    if (updateFrom === 'filters') {
+      if (Number.isInteger($scope.init.filterBase)) {
+        if ($scope.params.page !== $scope.init.filterBase) {
+          filterChangedPage = true;
+        }
+        $scope.params.page = $scope.init.filterBase;
+      }
+    }
     $scope.url = buildUrl($scope.params, $scope.filters);
-    if ($scope.reload && updateFrom === 'filters') {
-      $scope.reload = function () {
-        $scope.resourceCallback($scope.url, angular.copy($scope.params))
-        .then(function (resource) {
-          setDirectivesValues(resource);
-        });
-      };
-    } else {
-      $scope.resourceCallback($scope.url, angular.copy($scope.params))
+
+    function updateServerSideResource () {
+      $scope.logs.updateServerSideResourceRunning = true;
+      var paramsObj = angular.copy($scope.params);
+      paramsObj.filters = $scope.filters;
+      $scope.resourceCallback($scope.url, paramsObj)
       .then(function (resource) {
         setDirectivesValues(resource);
+        $scope.logs.updateServerSideResourceRunning = false;
       });
+    }
+
+    if ($scope.reload) {
+      $scope.reload = updateServerSideResource;
+    }
+    if ((initNow || updateFrom === 'params') &&
+        !$scope.logs.updateServerSideResourceRunning) {
+
+      if ($scope.reload) {
+        if (!filterChangedPage) {
+          updateServerSideResource();
+        }
+      } else {
+        updateServerSideResource();
+        filterChangedPage = false;
+      }
     }
   };
   
