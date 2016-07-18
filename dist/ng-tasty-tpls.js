@@ -103,7 +103,7 @@ angular.module('ngTasty.component.table', [
   if (!angular.isUndefined($scope.init.filterBase)) {
     $scope.init.filterBase = $scope.init.filterBase;
   } else {
-    $scope.init.filterBase = vm.config.init.filterBase;
+    $scope.init.filterBase = tableConfig.init.filterBase;
   }
   $scope.watchResource = $scope.watchResource || tableConfig.watchResource;
 
